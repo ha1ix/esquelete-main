@@ -1,0 +1,73 @@
+---
+import { Icon } from "astro-icon/components";
+import AccordionLayout from "../layouts/AccordionLayout.astro";
+import * as who from "../pages/who/who.md";
+import Card from "./Card.astro";
+import ContactCard from "./ContactCard.astro";
+const what = await Astro.glob("../pages/what/*.md");
+const where = await Astro.glob("../pages/where/*.md");
+const PDF = "/Zen__the_Art_of_Macintosh1986.pdf";
+---
+
+<div class="join join-vertical gap-1">
+  <AccordionLayout title={"who"} icon={"carbon:infinity-symbol"}>
+    <article class="text-justify">
+      <Fragment set:html={who.compiledContent()} />
+    </article>
+  </AccordionLayout>
+  <AccordionLayout title={"what"} icon={"carbon:accessibility-color"}>
+    {
+      what.map((item) => {
+        return (
+          <Card
+            title={item.frontmatter.title}
+            timeframe={item.frontmatter.date}
+            description={item.compiledContent()}
+            tags={item.frontmatter.tags}
+            url={item.frontmatter.url}
+            url_name={item.frontmatter.org}
+            location={item.frontmatter.location}
+          />
+        );
+      })
+    }
+  </AccordionLayout>
+  <AccordionLayout title={"when"} icon={"carbon:hourglass"}>
+    <div class="flex justify-center w-full">
+      <div
+        class="card card-compact card-bordered border-[oklch(var(--s))] w-96 md:w-112 lg:w-128 hover:shadow-lg transition-all"
+      >
+        <figure>
+          <object data={PDF} type="application/pdf" width="100%"></object>
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">the future is not evenly distributed</h2>
+          <p></p>
+          <div class="card-actions justify-end">
+            <a target="_blank" href={PDF}>
+              <button class="btn btn-outline">
+                <p>Download</p>
+                <Icon name="carbon:document-pdf" class="w-6 h-6 ml-1" />
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AccordionLayout>
+  <AccordionLayout title={"where"} icon={"carbon:campsite"}>
+    <div class="flex flex-wrap content-around gap-4 justify-center">
+      {
+        where.map((item) => {
+          return (
+            <ContactCard
+              url={item.frontmatter.url}
+              url_name={item.frontmatter.title}
+              icon={item.frontmatter.icon}
+            />
+          );
+        })
+      }
+    </div>
+  </AccordionLayout>
+</div>
