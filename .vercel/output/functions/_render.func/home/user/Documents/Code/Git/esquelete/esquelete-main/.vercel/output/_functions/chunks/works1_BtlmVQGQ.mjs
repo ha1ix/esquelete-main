@@ -3,13 +3,13 @@ import { c as createComponent, r as renderTemplate, m as maybeRenderHead, u as u
 import 'kleur/colors';
 import 'clsx';
 
-const html = "<p>Network state infrastructure project codenamed “Altstadt” to provide alternative nation state benefits. Architecture phase. Initial infrastructure will include passport-style documentation, easy-onboarding crypto, DID-verification, instant messaging, email accounts and possibly phone. Eventual physicality.</p>";
+const html = "<p>Network state infrastructure project to provide alternative nation state benefits. Architecture phase. Initial implementation will include passport-style documentation, easy-onboarding crypto, DID-verification, instant messaging, email accounts and possibly phone.</p>";
 
-				const frontmatter = {"title":"Altstadt","date":"2022 - Present","url":"https://guild.xyz/altstadt","url_name":"guild.xyz","org":"Altstadt","tags":["network state","sovereignity","seeking collaborators","passport","supranational"]};
+				const frontmatter = {"title":"Plenipotentiary","date":"2022 - Present","url":"https://guild.xyz/altstadt","url_name":"guild.xyz","org":"Codename 'Altstadt'","tags":["network state","sovereignity","seeking collaborators","passport","supranational"]};
 				const file = "/home/user/Documents/Code/Git/esquelete/esquelete-main/src/pages/what/works1.md";
 				const url = "/what/works1";
 				function rawContent() {
-					return "Network state infrastructure project codenamed \"Altstadt\" to provide alternative nation state benefits. Architecture phase. Initial infrastructure will include passport-style documentation, easy-onboarding crypto, DID-verification, instant messaging, email accounts and possibly phone. Eventual physicality. ";
+					return "Network state infrastructure project to provide alternative nation state benefits. Architecture phase. Initial implementation will include passport-style documentation, easy-onboarding crypto, DID-verification, instant messaging, email accounts and possibly phone.";
 				}
 				function compiledContent() {
 					return html;

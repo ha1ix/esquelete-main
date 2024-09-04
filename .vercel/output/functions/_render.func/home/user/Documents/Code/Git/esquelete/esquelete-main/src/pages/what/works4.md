@@ -1,10 +1,10 @@
 ---
-title: osm
+title: editor
 date: 2016 - Present
 url: https://www.openstreetmap.org/
 location: Earth
-org: contributor
+org: OSM
 tags: ["open source", "maps"]
 ---
 
-Editor.
+International mapping contributions.

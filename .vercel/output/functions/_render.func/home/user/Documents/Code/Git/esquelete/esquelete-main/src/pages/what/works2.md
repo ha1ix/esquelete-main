@@ -1,5 +1,5 @@
 ---
-title: philanthropy
+title: philanthropist
 date: 2023 - Present
 org: funding
 tags:
@@ -14,7 +14,7 @@ tags:
     ]
 ---
 
-Automated annual grants to the following groups, among others:
+Automated rerurring grants not limited to the following:
 
 - Electronic Frontier Foundation
 - Effective Ventures Foundation

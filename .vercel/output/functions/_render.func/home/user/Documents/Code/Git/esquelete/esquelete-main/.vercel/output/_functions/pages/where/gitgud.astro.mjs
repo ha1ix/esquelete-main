@@ -1,4 +1,4 @@
-import { _ as _page } from '../../chunks/gitgud_D51i4V7O.mjs';
+import { _ as _page } from '../../chunks/gitgud_BSkilu3k.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const page = () => _page;
