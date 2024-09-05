@@ -14,7 +14,6 @@
     "22": "latest",
     "@astro-community/astro-embed-link-preview": "latest",
     "@astrojs/tailwind": "latest",
-    "@astrojs/vercel": "latest",
     "@fontsource-variable/dm-sans": "latest",
     "@iconify-json/carbon": "latest",
     "@iconify-json/mdi": "latest",

@@ -1,10 +1,18 @@
 ---
-title: editor
-date: 2016 - Present
-url: https://www.openstreetmap.org/
-location: Earth
-org: OSM
-tags: ["open source", "maps"]
+title: contributor
+date: 2010 - Present
+location: cyberspace
+org: various
+tags: ["open source"]
 ---
 
-International mapping contributions.
+Among others:
+
+- Open Street Map
+- Graphene08
+- BOINC
+- Firefox
+- FDroid
+- QubesOS
+- RocketPool
+- Grin (MimbleWimble)
