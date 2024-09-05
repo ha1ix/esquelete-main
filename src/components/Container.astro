@@ -15,7 +15,7 @@ const PDF = "/Zen__the_Art_of_Macintosh1986.pdf";
       <Fragment set:html={who.compiledContent()} />
     </article>
   </AccordionLayout>
-  <AccordionLayout title={"what"} icon={"carbon:accessibility-color"}>
+  <AccordionLayout title={"what"} icon={"carbon:accessibility-color"} class="text-lg">
     {
       what.map((item) => {
         return (
@@ -55,7 +55,7 @@ const PDF = "/Zen__the_Art_of_Macintosh1986.pdf";
       </div>
     </div>
   </AccordionLayout>
-  <AccordionLayout title={"where"} icon={"carbon:campsite"}>
+  <AccordionLayout title={"where"} icon={"carbon:campsite"} class="text-lg">
     <div class="flex flex-wrap content-around gap-4 justify-center">
       {
         where.map((item) => {
