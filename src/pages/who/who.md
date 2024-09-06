@@ -8,7 +8,8 @@ website: "https://b0y.eu"
 
 ---
 
-Pronounced nonce. Ultralight low-waste minimaximalist. Jungles surround walled gardens. 
+/nɒns/
+Ultralight low-waste minimaximalist. Jungles surround walled gardens. 
 - 
 - <a href="https://optimism.easscan.org/address/0x0783f5A4A65247cC1a49E4e7064C2339C7226c4b">Humanity:
 
