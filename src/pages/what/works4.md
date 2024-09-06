@@ -9,7 +9,7 @@ tags: ["open source"]
 Among others:
 
 - Open Street Map
-- Graphene08
+- GrapheneOS
 - BOINC
 - Firefox
 - FDroid
