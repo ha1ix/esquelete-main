@@ -14,7 +14,7 @@ tags:
     ]
 ---
 
-Automated rerurring grants not limited to the following:
+Automated rerurring grants not limited to:
 
 - Electronic Frontier Foundation
 - Effective Ventures Foundation
