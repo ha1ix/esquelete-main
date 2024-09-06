@@ -10,4 +10,4 @@ tags:
     "game theory",
     ]
 ---
-Design and concept experimental/commercial endeavors related to decentralization. Simultaneously for two oragnizations, Decaut and Mosaic.
+Design and concept experimental/commercial decentralization endeavors.
