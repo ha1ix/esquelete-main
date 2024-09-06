@@ -13,4 +13,4 @@ tags:
     "supranational",
     ]
 ---
-Network state infrastructure project to provide alternative nation state benefits. Architecture phase. Initial implementation will include passport-style documentation, easy-onboarding crypto, DID-verification, instant messaging, email accounts and possibly phone.
+Network state infrastructure experiment.
