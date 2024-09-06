@@ -11,7 +11,7 @@ import { Icon } from "astro-icon/components";
   <head>
     <script is:inline>
       if (localStorage.getItem("theme") === null) {
-        document.documentElement.setAttribute("data-theme", "lofi");
+        document.documentElement.setAttribute("data-theme", "black");
       } else
         document.documentElement.setAttribute(
           "data-theme",
@@ -36,7 +36,7 @@ import { Icon } from "astro-icon/components";
       <Icon name="carbon:moon" class="w-4 h-4" />
       <input
         type="checkbox"
-        data-toggle-theme="black,lofi"
+        data-toggle-theme="lofi,black"
         data-act-class="ACTIVECLASS"
         class="toggle toggle-sm mx-1 bg-secondary"
         checked
