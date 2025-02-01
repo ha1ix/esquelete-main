@@ -7,8 +7,9 @@ pronouns: $ETH:b0y.eu
 website: "https://wiki.sove.re/people/riso"
 
 ---
-
-- spun up https://bloat.grange.la/ which lets you log in to the grange.la server completely javascript free !
+<!-- START_SECTION:pinned_post -->
+<LATEST-PINNED-POST>
+<!-- END_SECTION:pinned_post -->
 - 
 - <a href="https://optimism.easscan.org/address/0x0783f5A4A65247cC1a49E4e7064C2339C7226c4b">Humanity:
 

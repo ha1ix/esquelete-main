@@ -22,7 +22,8 @@ jobs:
           const ACCOUNT_ID = "01945090-d935-9184-aa31-a7d61df6bd61";
           const API_URL = `https://grange.la/api/v1/accounts/${ACCOUNT_ID}/statuses?pinned=true`;
           const FILE_PATH = "./src/pages/who/who.md";
-          const PLACEHOLDER = "<LATEST-PINNED-POST>";
+          const START_MARKER = "<!-- START_SECTION:pinned_post -->";
+          const END_MARKER = "<!-- END_SECTION:pinned_post -->";
           
           console.log(`Checking file ${FILE_PATH} exists...`);
           if (!fs.existsSync(FILE_PATH)) {
@@ -75,23 +76,28 @@ jobs:
             console.log("Generated markdown:", markdown);
             
             let content = fs.readFileSync(FILE_PATH, "utf8");
-            
-            if (!content.includes(PLACEHOLDER)) {
-              console.error(`Placeholder "${PLACEHOLDER}" not found in file`);
+
+            // First restore the placeholder between markers
+            const markerRegex = new RegExp(`${START_MARKER}[\\s\\S]*?${END_MARKER}`);
+            if (!content.match(markerRegex)) {
+              console.error("Markers not found in file");
               process.exit(1);
             }
-            
-            // Simple placeholder replacement
-            const newContent = content.replace(PLACEHOLDER, markdown);
-            
+
+            // Replace everything between markers with new content
+            const newContent = content.replace(
+              markerRegex,
+              `${START_MARKER}\n${markdown}\n${END_MARKER}`
+            );
+
             if (newContent === content) {
               console.log("No changes needed");
               process.exit(0);
             }
-            
+
             fs.writeFileSync(FILE_PATH, newContent);
             console.log("File updated successfully");
-          })
+            })
           .catch(error => {
             console.error("Error:", error);
             process.exit(1);
