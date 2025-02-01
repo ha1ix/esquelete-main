@@ -1,7 +1,7 @@
 ---
 title: affected altruism
-date: 2020 - Present
-org: philanthropic
+date: philanthrope
+org: 2020 - Present
 tags:
   [
     "OSS",
@@ -13,7 +13,7 @@ tags:
     ]
 ---
 
-Automated rerurring grants not limited to:
+Automated recurring:
 
 - Electronic Frontier Foundation
 - Effective Ventures Foundation

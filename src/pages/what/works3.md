@@ -1,9 +1,9 @@
 ---
-title: "research consultant"
-date: 2017 - 2022
+title: "Tessara Decaut"
+date: research consultant
 url: https://mosaic.io
-url_name: "Decaut"
-org: Tessera
+url_name: "Mosaic"
+org: 2017 - 2022
 tags:
   [
     "behavioral economics",

@@ -1,14 +1,14 @@
 ---
 title: "LaGrange Punkts"
-date: HOST
+date: host
 url: https://grange.la
-url_name: "Grange.La"
-org: Grange.La 
+url_name: "grange.la"
+org: grange.la 
 tags:
   [
-    "lunarpunk",,
+    "lunarpunk",
     "social",
     "activitypub",
     ]
 ---
-Federated microblog server. Sign-in-with-Ethereum, and other public key integration. Like xitter but more like Mastodon. Written in Rust.
+Federated microblog server. Sign-in-with-Ethereum, and other public key integration. Like xitter but more like Mastodon.

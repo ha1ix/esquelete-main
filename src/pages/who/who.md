@@ -3,8 +3,8 @@ title: who
 name: "RIS0 N0NX"
 designation: "lunarmonk"
 location: strange loop/land
-pronouns: b0y.eu
-website: "https://b0y.eu"
+pronouns: $ETH:b0y.eu
+website: "https://wiki.sove.re/people/riso"
 
 ---
 

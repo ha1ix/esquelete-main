@@ -1,6 +1,8 @@
 ---
 title: learning
 date: always
+url: https://library.kiwix.org/#lang=eng&q=&category=wikipedia
+url_name: "the entirety of wikipedia fits on your phone"
 org: universe
 tags:
   [

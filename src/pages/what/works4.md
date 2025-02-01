@@ -1,9 +1,9 @@
 ---
-title: contributor
-date: 2010 - Present
+title: Open Source
+date: contributor
 location: cyberspace
-org: various
-tags: ["open source"]
+org: 2010 - Present
+tags: ["free as a beer"]
 ---
 
 Among others:
