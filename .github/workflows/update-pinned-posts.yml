@@ -68,10 +68,10 @@ jobs:
               .map(post => {
                 const cleaned = post.content.replace(/<[^>]*>/g, "").trim();
                 console.log(`Processing post: ${cleaned.substring(0, 50)}...`);
-                return cleaned;
+                // Add link using the url field from the API
+                return `- [${cleaned}](${post.url})`;
               })
               .filter(content => content)
-              .map(content => `- ${content}`)
               .join("\n");
             
             console.log("Generated markdown:", markdown);
