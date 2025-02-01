@@ -1,13 +1,13 @@
 ---
-title: philanthropist
-date: 2023 - Present
-org: funding
+title: affected altruism
+date: 2020 - Present
+org: philanthropic
 tags:
   [
-    "open source",
-    "donation",
-    "ai",
-    "cognitive science",
+    "OSS",
+    "dignity",
+    "futurism",
+    "meditation",
     "governance",
     "longevity",
 

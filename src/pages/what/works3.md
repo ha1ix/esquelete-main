@@ -1,13 +1,15 @@
 ---
 title: "research consultant"
-date: 2018 - 2022
+date: 2017 - 2022
 url: https://mosaic.io
-url_name: "mosaic"
-org: mosaic
+url_name: "Decaut"
+org: Tessera
 tags:
   [
     "behavioral economics",
-    "game theory",
+    "start-up",
+    "blockchain",
+    "tokenization",
     ]
 ---
-Design and concept experimental/commercial decentralization endeavors.
+Design and concept experimental/commercial endeavors related to decentralization. Mostly telling people their ideas were bad.

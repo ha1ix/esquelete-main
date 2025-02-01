@@ -1,7 +1,7 @@
 ---
 title: who
 name: "RIS0 N0NX"
-designation: "solar/cypher punk"
+designation: "solarmonk"
 location: strange loop/land
 pronouns: b0y.eu
 website: "https://b0y.eu"

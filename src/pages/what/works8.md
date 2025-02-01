@@ -1,20 +1,17 @@
 ---
-title: education
-date: 2017 - Present
-org: various
+title: learning
+date: always
+org: universe
 tags:
   [
     "education",
-    "decentralization",
-    "ai",
-    "computer science",
+    "AI",
+    "ML",
 
     ]
 ---
-Bachelors: Cognitive Science
-
-Technical certifications not limited to:
-
+Ba: Cognitive Science
+Ma: Education
 - Stanford University: Social and Economic Networks: Models and Analysis
 - Stanford University: Machine Learning Specialization
 - University of Toronto: Behavioral Economics in Action

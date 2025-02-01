@@ -16,3 +16,4 @@ Among others:
 - QubesOS
 - RocketPool
 - Grin (MimbleWimble)
+- Mitra

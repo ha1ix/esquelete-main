@@ -7,10 +7,11 @@ org: folia vitrae
 tags:
   [
     "gambol",
-    "wiki",
-    "request access",
+    "garden",
     "poetry",
     "prose",
+    "solarpunk",
+    "scifi",
     ]
 ---
 

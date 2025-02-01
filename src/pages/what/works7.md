@@ -2,8 +2,12 @@
 title: member
 date: ongoing
 ---
+DAOs
+- HAI
+- RAI
+- RAIL
 
-Among others:
+Clubs:
 - Pattern Language
 - The WELL
 - The Church of the Swimming Elephant

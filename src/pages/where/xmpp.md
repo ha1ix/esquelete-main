@@ -1,5 +1,5 @@
 ---
-title: xmpp
+title: telegram
 icon: carbon:phrase-sentiment
-url: xmpp:aloha@im.b0y.eu
+url: t.me/b0yeu
 ---
