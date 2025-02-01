@@ -78,22 +78,22 @@ jobs:
             
             let content = fs.readFileSync(FILE_PATH, "utf8");
 
-            // First restore the placeholder between markers
-            const markerRegex = new RegExp(
-              START_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 
-              '[\\s\\S]*?' + 
-              END_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-            );
-            if (!content.match(markerRegex)) {
+            // Find start and end positions
+            const startPos = content.indexOf(START_MARKER);
+            const endPos = content.indexOf(END_MARKER) + END_MARKER.length;
+            
+            if (startPos === -1 || endPos === -1) {
               console.error("Markers not found in file");
               process.exit(1);
             }
-            
-            // Replace everything between markers with new content
-            const newContent = content.replace(
-              markerRegex,
-              `${START_MARKER}\n${markdown}\n${END_MARKER}`
-            );
+
+            // Create new content
+            const newContent = 
+              content.substring(0, startPos) + 
+              START_MARKER + "\n" + 
+              markdown + "\n" + 
+              END_MARKER +
+              content.substring(endPos);
 
             if (newContent === content) {
               console.log("No changes needed");
@@ -102,7 +102,7 @@ jobs:
 
             fs.writeFileSync(FILE_PATH, newContent);
             console.log("File updated successfully");
-            })
+          })
           .catch(error => {
             console.error("Error:", error);
             process.exit(1);
