@@ -2,8 +2,8 @@ name: Update Pinned Posts
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Runs every 6 hours
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   update-posts:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 1  # Shallow clone for faster checkout
+          fetch-depth: 1
       
       - name: Create and Run Update Script
         run: |
@@ -22,11 +22,27 @@ jobs:
           const ACCOUNT_ID = "01945090-d935-9184-aa31-a7d61df6bd61";
           const API_URL = `https://grange.la/api/v1/accounts/${ACCOUNT_ID}/statuses?pinned=true`;
           const FILE_PATH = "./src/pages/who/who.md";
+          const PLACEHOLDER = "<LATEST-PINNED-POST>";
+          
+          console.log(`Checking file ${FILE_PATH} exists...`);
+          if (!fs.existsSync(FILE_PATH)) {
+            console.error(`File not found: ${FILE_PATH}`);
+            process.exit(1);
+          }
+          
+          console.log("Starting update process...");
+          console.log(`Fetching pinned posts from: ${API_URL}`);
           
           new Promise((resolve, reject) => {
             https.get(API_URL, {
-              headers: { "User-Agent": "GitHub-Action-Bot" }
+              headers: { 
+                "User-Agent": "GitHub-Action-Bot",
+                "Accept": "application/json"
+              }
             }, (res) => {
+              console.log("API Response Status:", res.statusCode);
+              console.log("API Response Headers:", JSON.stringify(res.headers, null, 2));
+              
               if (res.statusCode !== 200) {
                 reject(new Error(`API request failed with status ${res.statusCode}`));
                 return;
@@ -39,26 +55,35 @@ jobs:
           })
           .then(data => {
             const posts = JSON.parse(data);
+            console.log(`Found ${posts.length} pinned posts`);
+            
             if (!Array.isArray(posts) || posts.length === 0) {
               console.log("No pinned posts found");
               process.exit(0);
             }
             
             const markdown = posts
-              .map(post => post.content.replace(/<[^>]*>/g, "").trim()) // Remove HTML tags
-              .filter(content => content) // Remove empty posts
+              .map(post => {
+                const cleaned = post.content.replace(/<[^>]*>/g, "").trim();
+                console.log(`Processing post: ${cleaned.substring(0, 50)}...`);
+                return cleaned;
+              })
+              .filter(content => content)
               .map(content => `- ${content}`)
               .join("\n");
             
-            const content = fs.readFileSync(FILE_PATH, "utf8");
-            const placeholder = "<LATEST-PINNED-POST>";
+            console.log("Generated markdown:", markdown);
             
-            if (!content.includes(placeholder)) {
-              console.log("Placeholder not found in file");
-              process.exit(0);
+            let content = fs.readFileSync(FILE_PATH, "utf8");
+            
+            if (!content.includes(PLACEHOLDER)) {
+              console.error(`Placeholder "${PLACEHOLDER}" not found in file`);
+              process.exit(1);
             }
             
-            const newContent = content.replace(placeholder, markdown);
+            // Simple placeholder replacement
+            const newContent = content.replace(PLACEHOLDER, markdown);
+            
             if (newContent === content) {
               console.log("No changes needed");
               process.exit(0);
@@ -78,4 +103,6 @@ jobs:
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
           git add ./src/pages/who/who.md
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update pinned posts [skip ci]" && git push)
+          git status
+          git diff
+          git commit -m "Update pinned posts [skip ci]" && git push || echo "No changes to commit"
