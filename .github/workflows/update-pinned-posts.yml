@@ -54,6 +54,7 @@ jobs:
               res.on("end", () => resolve(data));
             }).on("error", reject);
           })
+          
           .then(data => {
             const posts = JSON.parse(data);
             console.log(`Found ${posts.length} pinned posts`);
@@ -78,12 +79,14 @@ jobs:
             let content = fs.readFileSync(FILE_PATH, "utf8");
 
             // First restore the placeholder between markers
-            const markerRegex = new RegExp(`${START_MARKER}[\\s\\S]*?${END_MARKER}`);
+            const markerRegex = new RegExp(
+              `${START_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${END_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`
+            );
             if (!content.match(markerRegex)) {
               console.error("Markers not found in file");
               process.exit(1);
             }
-
+            
             // Replace everything between markers with new content
             const newContent = content.replace(
               markerRegex,
