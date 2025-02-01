@@ -1,5 +1,5 @@
 ---
 title: telegram
 icon: carbon:phrase-sentiment
-url: t.me/b0yeu
+url: https://t.me/b0yeu
 ---
