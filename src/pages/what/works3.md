@@ -7,9 +7,7 @@ org: Tessera
 tags:
   [
     "behavioral economics",
-    "start-up",
-    "blockchain",
-    "tokenization",
+    "architecture",
     ]
 ---
-Design and concept experimental/commercial endeavors related to decentralization. Mostly telling people their ideas were bad.
+Mostly telling people their ideas were bad.

@@ -1,9 +1,9 @@
 ---
-title: "Editor"
-date: 2024 - Present
+title: "SOVERENTS"
+date: EDITOR
 url: https://sove.re
 url_name: "sove.re"
-org: Soverents 
+org: sove.re 
 tags:
   [
     "network-societies",

@@ -6,7 +6,6 @@ tags:
   [
     "OSS",
     "dignity",
-    "futurism",
     "meditation",
     "governance",
     "longevity",

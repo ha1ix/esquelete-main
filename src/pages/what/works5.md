@@ -10,7 +10,6 @@ tags:
     "garden",
     "poetry",
     "prose",
-    "solarpunk",
     "scifi",
     ]
 ---
