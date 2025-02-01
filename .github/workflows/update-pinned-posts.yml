@@ -1,0 +1,81 @@
+name: Update Pinned Posts
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Runs every 6 hours
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  update-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1  # Shallow clone for faster checkout
+      
+      - name: Create and Run Update Script
+        run: |
+          node -e '
+          const fs = require("fs");
+          const https = require("https");
+          
+          const ACCOUNT_ID = "01945090-d935-9184-aa31-a7d61df6bd61";
+          const API_URL = `https://grange.la/api/v1/accounts/${ACCOUNT_ID}/statuses?pinned=true`;
+          const FILE_PATH = "./src/pages/who/who.md";
+          
+          new Promise((resolve, reject) => {
+            https.get(API_URL, {
+              headers: { "User-Agent": "GitHub-Action-Bot" }
+            }, (res) => {
+              if (res.statusCode !== 200) {
+                reject(new Error(`API request failed with status ${res.statusCode}`));
+                return;
+              }
+              
+              let data = "";
+              res.on("data", chunk => data += chunk);
+              res.on("end", () => resolve(data));
+            }).on("error", reject);
+          })
+          .then(data => {
+            const posts = JSON.parse(data);
+            if (!Array.isArray(posts) || posts.length === 0) {
+              console.log("No pinned posts found");
+              process.exit(0);
+            }
+            
+            const markdown = posts
+              .map(post => post.content.replace(/<[^>]*>/g, "").trim()) // Remove HTML tags
+              .filter(content => content) // Remove empty posts
+              .map(content => `- ${content}`)
+              .join("\n");
+            
+            const content = fs.readFileSync(FILE_PATH, "utf8");
+            const placeholder = "<LATEST-PINNED-POST>";
+            
+            if (!content.includes(placeholder)) {
+              console.log("Placeholder not found in file");
+              process.exit(0);
+            }
+            
+            const newContent = content.replace(placeholder, markdown);
+            if (newContent === content) {
+              console.log("No changes needed");
+              process.exit(0);
+            }
+            
+            fs.writeFileSync(FILE_PATH, newContent);
+            console.log("File updated successfully");
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            process.exit(1);
+          });
+          '
+      
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add ./src/pages/who/who.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update pinned posts [skip ci]" && git push)
