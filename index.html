@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="gl" data-theme="black">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>b0y.eu</title>
+  <link rel="preload" as="image" href="/profile.webp" />
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme') || 'black';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* ===== reset ===== */
+    *, ::before, ::after { box-sizing: border-box; border: 0 solid currentColor; }
+    html, body { margin: 0; padding: 0; }
+    h1, h2, p, ul, figure { margin: 0; padding: 0; }
+    ul { list-style: none; }
+    a { color: inherit; text-decoration: inherit; }
+    button { background: none; font: inherit; color: inherit; cursor: pointer; padding: 0; }
+    img { display: block; max-width: 100%; height: auto; }
+    input { margin: 0; }
+
+    /* ===== theme ===== */
+    [data-theme="black"] { --bg: #000; --fg: #fff; --sec: #e5e5e5; }
+    [data-theme="lofi"]  { --bg: #fff; --fg: #000; --sec: #1a1a1a; }
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, sans-serif;
+    }
+
+    /* ===== components ===== */
+    /* collapse (accordion) */
+    .collapse { position: relative; display: flex; flex-direction: column; width: 100%; border-radius: 1rem; }
+    .collapse > input[type="checkbox"] {
+      appearance: none; -webkit-appearance: none;
+      position: absolute; top: 0; left: 0; width: 100%; height: 3.75rem;
+      opacity: 0; cursor: pointer; z-index: 1;
+    }
+    .collapse-title { position: relative; min-height: 3.75rem; padding: 1rem 3rem 1rem 1rem; width: 100%; }
+    .collapse-arrow > .collapse-title::after {
+      content: ""; position: absolute; top: 1.9rem; right: 1.4rem;
+      height: 0.5rem; width: 0.5rem; box-shadow: 2px 2px;
+      transform: translateY(-100%) rotate(45deg);
+      transition: transform 0.25s ease; pointer-events: none;
+    }
+    .collapse-arrow > input:checked ~ .collapse-title::after {
+      transform: translateY(-50%) rotate(225deg);
+    }
+    .collapse-content {
+      max-height: 0; overflow: hidden; padding: 0 1rem;
+      transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1), padding 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .collapse > input:checked ~ .collapse-content { max-height: 9999px; padding-bottom: 1rem; }
+
+    /* card */
+    .card { position: relative; display: flex; flex-direction: column; border-radius: 1rem; overflow: hidden; }
+    .card-bordered { border-width: 1px; }
+    .card-body { display: flex; flex-direction: column; flex: 1 1 auto; gap: 0.5rem; padding: 1rem; text-align: left; }
+    .card-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .card figure { display: flex; align-items: center; justify-content: center; }
+
+    /* badge */
+    .badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 1.9rem; border: 1px solid transparent;
+      padding: 0 0.563rem; height: 1.25rem; width: fit-content;
+      font-size: 0.875rem; line-height: 1.25rem;
+    }
+    .badge-outline { border-color: currentColor; background-color: transparent; }
+
+    /* btn (btn-md = default size, no rule needed) */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem; flex-wrap: nowrap;
+      height: 3rem; min-height: 3rem; padding: 0 1rem;
+      border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600;
+      text-align: center; user-select: none;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn-outline { border: 1px solid currentColor; background-color: transparent; }
+    .btn-outline:hover { background-color: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+    /* toggle (theme switch) — knob drawn with inset box-shadow, daisyui technique */
+    .toggle {
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+      border-radius: 9999px; border: 1px solid var(--sec);
+      --tglbg: var(--bg); --handleoffset: 0.75rem;
+      box-shadow: calc(var(--handleoffset) * -1) 0 0 2px var(--tglbg) inset,
+                  0 0 0 2px var(--tglbg) inset;
+      transition: box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle:checked {
+      box-shadow: var(--handleoffset) 0 0 2px var(--tglbg) inset,
+                  0 0 0 2px var(--tglbg) inset;
+    }
+    .toggle-sm { width: 2rem; height: 1.25rem; }
+
+    /* join — only used to stack the accordion sections */
+    .join { display: flex; }
+    .join-vertical { flex-direction: column; }
+
+    /* link */
+    .link { text-decoration: underline; cursor: pointer; }
+    .link-hover { text-decoration: none; }
+    .link-hover:hover { text-decoration: underline; }
+
+    /* prose (card descriptions) */
+    .prose p { margin: 0.75em 0; }
+    .prose p:first-child { margin-top: 0; }
+    .prose ul { list-style: disc; padding-left: 1.625em; margin: 0.75em 0; }
+    .prose li { margin: 0.25em 0; }
+    .prose a { text-decoration: underline; }
+
+    .container { width: 100%; }
+
+    /* icons */
+    svg.icon { display: inline-block; vertical-align: middle; fill: currentColor; flex-shrink: 0; }
+
+    /* atta ring — orbiting logo halo around the avatar */
+    .halo { position: relative; width: 8.5rem; height: 8.5rem; flex-shrink: 0; }
+    .halo img { position: absolute; inset: 18.7%; width: 62.6%; height: 62.6%; }
+    .halo svg.ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: orbit 40s linear infinite; }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @media (min-width: 768px) { .halo { width: 10rem; height: 10rem; } }
+
+    /* ===== utilities ===== */
+    /* display & layout */
+    .flex { display: flex; }
+    .grid { display: grid; }
+    .inline-block { display: inline-block; }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .col-span-2 { grid-column: span 2 / span 2; }
+    .place-items-center { place-items: center; }
+
+    /* flexbox */
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-grow { flex-grow: 1; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-end { justify-content: flex-end; }
+    .content-around { align-content: space-around; }
+    .self-start { align-self: flex-start; }
+    .self-center { align-self: center; }
+    .justify-self-start { justify-self: start; }
+    .justify-self-end { justify-self: end; }
+    .gap-1 { gap: 0.25rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+
+    /* sizing */
+    .w-4 { width: 1rem; }
+    .w-6 { width: 1.5rem; }
+    .w-8 { width: 2rem; }
+    .w-20 { width: 5rem; }
+    .w-full { width: 100%; }
+    .w-max { width: max-content; }
+    .w-\[95vw\] { width: 95vw; }
+    .h-4 { height: 1rem; }
+    .h-6 { height: 1.5rem; }
+    .h-8 { height: 2rem; }
+    .h-max { height: max-content; }
+    .min-h-screen { min-height: 100vh; }
+    .max-w-2xl { max-width: 42rem; }
+    .max-w-3xl { max-width: 48rem; }
+
+    /* spacing */
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .mx-1 { margin-left: 0.25rem; margin-right: 0.25rem; }
+    .my-4 { margin-top: 1rem; margin-bottom: 1rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .ml-1 { margin-left: 0.25rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .mr-1 { margin-right: 0.25rem; }
+    .mr-2 { margin-right: 0.5rem; }
+    .mr-4 { margin-right: 1rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .-mt-4 { margin-top: -1rem; }
+    .pt-6 { padding-top: 1.5rem; }
+    .pb-2 { padding-bottom: 0.5rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+
+    /* position */
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .top-0 { top: 0; }
+    .top-4 { top: 1rem; }
+    .right-4 { right: 1rem; }
+    .left-full { left: 100%; }
+    .z-10 { z-index: 10; }
+
+    /* typography */
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .font-light { font-weight: 300; }
+    .font-extrabold { font-weight: 800; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .uppercase { text-transform: uppercase; }
+    .tracking-tight { letter-spacing: -0.025em; }
+    .tracking-tighter { letter-spacing: -0.05em; }
+    .align-middle { vertical-align: middle; }
+    .text-secondary { color: var(--sec); }
+
+    /* background / border */
+    .bg-secondary { background-color: var(--sec); }
+    .bg-transparent { background-color: transparent; }
+    .border { border-width: 1px; }
+    .border-\[oklch\(var\(--s\)\)\] { border-color: var(--sec); }
+
+    /* effects */
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+    .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+    .shadow-lg, .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    .grayscale-\[50\%\] { filter: grayscale(50%); }
+    .hover\:grayscale-0:hover { filter: grayscale(0); }
+    /* light theme: invert the profile image so the black render bg reads as white */
+    [data-theme="lofi"] .grayscale-\[50\%\] { filter: invert(1) grayscale(50%); }
+    [data-theme="lofi"] .hover\:grayscale-0:hover { filter: invert(1) grayscale(0); }
+    .overflow-hidden { overflow: hidden; }
+    .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 0.15s; }
+    .duration-300 { transition-duration: 0.3s; }
+    .duration-700 { transition-duration: 0.7s; }
+    .ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* ===== responsive ===== */
+    @media (min-width: 768px) {
+      .md\:flex { display: flex; }
+      .md\:flex-col { flex-direction: column; }
+      .md\:flex-wrap { flex-wrap: wrap; }
+      .md\:justify-between { justify-content: space-between; }
+      .md\:top-6 { top: 1.5rem; }
+      .md\:right-6 { right: 1.5rem; }
+      .md\:text-2xl { font-size: 1.5rem; line-height: 2rem; }
+      .md\:text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+      .md\:w-24 { width: 6rem; }
+      .md\:w-\[30rem\] { width: 30rem; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:top-8 { top: 2rem; }
+      .lg\:right-8 { right: 2rem; }
+      .lg\:w-\[34rem\] { width: 34rem; }
+    }
+    @media (min-width: 1280px) {
+      .xl\:top-10 { top: 2.5rem; }
+      .xl\:right-10 { right: 2.5rem; }
+    }
+    @media only screen and (max-width: 480px) {
+      * { font-size: 12px; }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="mx-auto pt-6 pb-2 relative">
+    <article class="flex flex-col md:flex-col items-center gap-4 w-full max-w-2xl">
+      <div class="halo">
+        <img alt="stolen from logos.co" src="/profile.webp"
+          class="grayscale-[50%] hover:grayscale-0 transition-all duration-300"
+          fetchpriority="high" />
+        <svg class="ring" viewBox="0 0 300 300" aria-hidden="true"><path d="M 222.2 75.2 L 257.4 88.0 M 250.9 124.8 L 257.4 88.0 M 234.6 79.7 A 110.0 110.0 0 0 1 253.2 111.9 M 285.5 138.1 A 136.0 136.0 0 0 1 273.3 207.5 M 283.9 173.6 L 252.4 168.1 M 261.4 228.0 A 136.0 136.0 0 0 1 207.5 273.3 M 237.4 254.2 L 216.8 229.7 M 178.7 250.0 L 150.0 274.0 M 121.3 250.0 L 150.0 274.0 M 168.6 258.4 A 110.0 110.0 0 0 1 131.4 258.4 M 92.5 273.3 A 136.0 136.0 0 0 1 38.6 228.0 M 62.6 254.2 L 83.2 229.7 M 26.7 207.5 A 136.0 136.0 0 0 1 14.5 138.1 M 16.1 173.6 L 47.6 168.1 M 49.1 124.8 L 42.6 88.0 M 77.8 75.2 L 42.6 88.0 M 46.8 111.9 A 110.0 110.0 0 0 1 65.4 79.7 M 72.0 38.6 A 136.0 136.0 0 0 1 138.1 14.5 M 103.5 22.2 L 114.4 52.3 M 161.9 14.5 A 136.0 136.0 0 0 1 228.0 38.6 M 196.5 22.2 L 185.6 52.3" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="text-center">
+        <div class="flex justify-center md:justify-between items-center mb-2 relative">
+          <h1 class="text-3xl font-extrabold tracking-tight md:text-3xl relative">
+            ATTABOY
+            <div class="absolute top-0 left-full ml-2 -mt-4">
+              <div class="badge w-max text-sm font-light badge-outline shadow-lg">$b0y.eu</div>
+            </div>
+          </h1>
+        </div>
+        <h2 class="text-lg mb-2 text-secondary">a lunarpunk practice</h2>
+        <div class="flex items-center justify-center mt-1">
+          <svg class="icon w-4 h-4 mr-1" viewBox="0 0 32 32"><path fill="currentColor" d="M16 18a5 5 0 1 1 5-5a5.006 5.006 0 0 1-5 5m0-8a3 3 0 1 0 3 3a3.003 3.003 0 0 0-3-3"/><path fill="currentColor" d="m16 30l-8.436-9.949a35 35 0 0 1-.348-.451A10.9 10.9 0 0 1 5 13a11 11 0 0 1 22 0a10.9 10.9 0 0 1-2.215 6.597l-.001.003s-.3.394-.345.447ZM8.813 18.395s.233.308.286.374L16 26.908l6.91-8.15c.044-.055.278-.365.279-.366A8.9 8.9 0 0 0 25 13a9 9 0 1 0-18 0a8.9 8.9 0 0 0 1.813 5.395"/></svg>
+          <p class="text-sm text-secondary">strange loop/land</p>
+        </div>
+      </div>
+    </article>
+  </header>
+
+  <!-- Theme toggle -->
+  <div class="flex items-center absolute top-4 right-4 md:top-6 md:right-6 lg:top-8 lg:right-8 xl:top-10 xl:right-10 z-10">
+    <svg class="icon w-4 h-4" viewBox="0 0 32 32"><path fill="currentColor" d="M13.503 5.414a15.076 15.076 0 0 0 11.593 18.194a11.1 11.1 0 0 1-7.975 3.39c-.138 0-.278.005-.418 0a11.094 11.094 0 0 1-3.2-21.584M14.98 3a1 1 0 0 0-.175.016a13.096 13.096 0 0 0 1.825 25.981c.164.006.328 0 .49 0a13.07 13.07 0 0 0 10.703-5.555a1.01 1.01 0 0 0-.783-1.565A13.08 13.08 0 0 1 15.89 4.38A1.015 1.015 0 0 0 14.98 3"/></svg>
+    <input type="checkbox" id="theme-toggle"
+      class="toggle toggle-sm mx-1 bg-secondary"
+      checked />
+    <svg class="icon w-4 h-4" viewBox="0 0 32 32"><path fill="currentColor" d="M15 2h2v5h-2zm6.688 6.9l3.506-3.506l1.414 1.414l-3.506 3.506zM25 15h5v2h-5zm-3.312 8.1l1.414-1.413l3.506 3.506l-1.414 1.414zM15 25h2v5h-2zm-9.606.192L8.9 21.686l1.414 1.414l-3.505 3.506zM2 15h5v2H2zm3.395-8.192l1.414-1.414L10.315 8.9L8.9 10.314zM16 12a4 4 0 1 1-4 4a4.005 4.005 0 0 1 4-4m0-2a6 6 0 1 0 6 6a6 6 0 0 0-6-6"/></svg>
+  </div>
+
+  <script>
+    document.getElementById('theme-toggle').addEventListener('change', function() {
+      var t = this.checked ? 'black' : 'lofi';
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+    });
+    // sync checkbox state with stored theme on load
+    (function() {
+      var t = localStorage.getItem('theme') || 'black';
+      document.getElementById('theme-toggle').checked = (t === 'black');
+    })();
+  </script>
+
+  <!-- Main content -->
+  <main class="mx-auto flex-grow max-w-3xl py-2 grid w-[95vw]">
+    <div class="container mx-auto md:flex md:flex-wrap">
+      <div class="join join-vertical gap-1 w-full">
+
+        <!-- ===== WHO ===== -->
+        <div class="collapse collapse-arrow ease-in-out duration-700">
+          <input type="checkbox" aria-label="who" />
+          <div class="collapse-title font-extrabold tracking-tight md:text-2xl">
+            <div class="flex items-center">
+              <svg class="icon w-8 h-8 mr-4" viewBox="0 0 32 32"><path fill="currentColor" d="M23 23c-5.656 0-7.858-6.41-7.949-6.684C15.034 16.265 13.208 11 9 11c-2.757 0-5 2.243-5 5s2.243 5 5 5c1.588 0 3.013-.732 4.237-2.176l1.526 1.293C13.164 22.003 11.172 23 9 23c-3.86 0-7-3.14-7-7s3.14-7 7-7c5.656 0 7.858 6.41 7.949 6.684C16.966 15.735 18.792 21 23 21c2.757 0 5-2.243 5-5s-2.243-5-5-5c-1.588 0-3.013.732-4.237 2.176l-1.526-1.293C18.836 9.997 20.828 9 23 9c3.86 0 7 3.14 7 7s-3.14 7-7 7"/></svg>
+              who
+            </div>
+          </div>
+          <div class="collapse-content">
+            <article class="text-center">
+              <ul>
+                <li><a href="https://grange.la/objects/0195230d-39e1-1e23-bcbf-a07c6275c67e">"c'est ça a décroissance, dormir plus, lire beaucoup, faire l'amour, marcher" #solarpunk</a></li>
+                <li></li>
+                <li><a href="https://optimism.easscan.org/address/0x0783f5A4A65247cC1a49E4e7064C2339C7226c4b">Humanity: 76.2%</a></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ===== WHAT ===== -->
+        <div class="collapse collapse-arrow ease-in-out duration-700">
+          <input type="checkbox" aria-label="what" />
+          <div class="collapse-title font-extrabold tracking-tight md:text-2xl">
+            <div class="flex items-center">
+              <svg class="icon w-8 h-8 mr-4" viewBox="0 0 32 32"><path fill="currentColor" d="M16 20a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4m0-6a2 2 0 1 0 2 2a2 2 0 0 0-2-2"/><path fill="currentColor" d="M16 24a10.655 10.655 0 0 1-9.97-7.758L5.97 16l.06-.242A10.655 10.655 0 0 1 16 8a10.655 10.655 0 0 1 9.97 7.758l.06.242l-.06.242A10.655 10.655 0 0 1 16 24m-7.965-8A8.6 8.6 0 0 0 16 22a8.6 8.6 0 0 0 7.965-6A8.6 8.6 0 0 0 16 10a8.6 8.6 0 0 0-7.965 6"/><path fill="currentColor" d="M16 30a14 14 0 1 1 14-14a14.016 14.016 0 0 1-14 14m0-26a12 12 0 1 0 12 12A12.014 12.014 0 0 0 16 4"/></svg>
+              what
+            </div>
+          </div>
+          <div class="collapse-content">
+
+            <!-- SOVERENTS -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">SOVERENTS</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">editor</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>A community commons for coordinating and coalescing.</p>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">network-societies</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">wetware</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">pop-up-villages</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">regen</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">zu</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">d/acc</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <a href="https://sove.re" target="_blank" class="link link-hover text-sm text-right flex justify-center items-center">
+                      sove.re
+                      <svg class="icon w-4 h-4 ml-2" viewBox="0 0 32 32"><path fill="currentColor" d="M29.25 6.76a6 6 0 0 0-8.5 0l1.42 1.42a4 4 0 1 1 5.67 5.67l-8 8a4 4 0 1 1-5.67-5.66l1.41-1.42l-1.41-1.42l-1.42 1.42a6 6 0 0 0 0 8.5A6 6 0 0 0 17 25a6 6 0 0 0 4.27-1.76l8-8a6 6 0 0 0-.02-8.48"/><path fill="currentColor" d="M4.19 24.82a4 4 0 0 1 0-5.67l8-8a4 4 0 0 1 5.67 0A3.94 3.94 0 0 1 19 14a4 4 0 0 1-1.17 2.85L15.71 19l1.42 1.42l2.12-2.12a6 6 0 0 0-8.51-8.51l-8 8a6 6 0 0 0 0 8.51A6 6 0 0 0 7 28a6.07 6.07 0 0 0 4.28-1.76l-1.42-1.42a4 4 0 0 1-5.67 0"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- folia vitrae -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">folia vitrae</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">writer</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>tumbling water, dappled koi, filtered green light, humid petrichor: weather brainstorms &amp; wetdreams in a room of glass.</p>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">gambol</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">garden</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">poetry</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">prose</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">scifi</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <a href="https://hw.ax" target="_blank" class="link link-hover text-sm text-right flex justify-center items-center">
+                      hw.ax
+                      <svg class="icon w-4 h-4 ml-2" viewBox="0 0 32 32"><path fill="currentColor" d="M29.25 6.76a6 6 0 0 0-8.5 0l1.42 1.42a4 4 0 1 1 5.67 5.67l-8 8a4 4 0 1 1-5.67-5.66l1.41-1.42l-1.41-1.42l-1.42 1.42a6 6 0 0 0 0 8.5A6 6 0 0 0 17 25a6 6 0 0 0 4.27-1.76l8-8a6 6 0 0 0-.02-8.48"/><path fill="currentColor" d="M4.19 24.82a4 4 0 0 1 0-5.67l8-8a4 4 0 0 1 5.67 0A3.94 3.94 0 0 1 19 14a4 4 0 0 1-1.17 2.85L15.71 19l1.42 1.42l2.12-2.12a6 6 0 0 0-8.51-8.51l-8 8a6 6 0 0 0 0 8.51A6 6 0 0 0 7 28a6.07 6.07 0 0 0 4.28-1.76l-1.42-1.42a4 4 0 0 1-5.67 0"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LaGrange Punkts -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">LaGrange Punkts</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">host</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>Federated microblog server. Sign-in-with-Ethereum, and other public key integration. Like xitter but more like Mastodon.</p>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">lunarpunk</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">social</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">activitypub</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <a href="https://grange.la" target="_blank" class="link link-hover text-sm text-right flex justify-center items-center">
+                      grange.la
+                      <svg class="icon w-4 h-4 ml-2" viewBox="0 0 32 32"><path fill="currentColor" d="M29.25 6.76a6 6 0 0 0-8.5 0l1.42 1.42a4 4 0 1 1 5.67 5.67l-8 8a4 4 0 1 1-5.67-5.66l1.41-1.42l-1.41-1.42l-1.42 1.42a6 6 0 0 0 0 8.5A6 6 0 0 0 17 25a6 6 0 0 0 4.27-1.76l8-8a6 6 0 0 0-.02-8.48"/><path fill="currentColor" d="M4.19 24.82a4 4 0 0 1 0-5.67l8-8a4 4 0 0 1 5.67 0A3.94 3.94 0 0 1 19 14a4 4 0 0 1-1.17 2.85L15.71 19l1.42 1.42l2.12-2.12a6 6 0 0 0-8.51-8.51l-8 8a6 6 0 0 0 0 8.51A6 6 0 0 0 7 28a6.07 6.07 0 0 0 4.28-1.76l-1.42-1.42a4 4 0 0 1-5.67 0"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tessara Decaut -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">Tessara Decaut</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">research consultant</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>Mostly telling people their ideas were bad.</p>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">behavioral economics</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">architecture</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <a href="https://mosaic.io" target="_blank" class="link link-hover text-sm text-right flex justify-center items-center">
+                      2017 - 2022
+                      <svg class="icon w-4 h-4 ml-2" viewBox="0 0 32 32"><path fill="currentColor" d="M29.25 6.76a6 6 0 0 0-8.5 0l1.42 1.42a4 4 0 1 1 5.67 5.67l-8 8a4 4 0 1 1-5.67-5.66l1.41-1.42l-1.41-1.42l-1.42 1.42a6 6 0 0 0 0 8.5A6 6 0 0 0 17 25a6 6 0 0 0 4.27-1.76l8-8a6 6 0 0 0-.02-8.48"/><path fill="currentColor" d="M4.19 24.82a4 4 0 0 1 0-5.67l8-8a4 4 0 0 1 5.67 0A3.94 3.94 0 0 1 19 14a4 4 0 0 1-1.17 2.85L15.71 19l1.42 1.42l2.12-2.12a6 6 0 0 0-8.51-8.51l-8 8a6 6 0 0 0 0 8.51A6 6 0 0 0 7 28a6.07 6.07 0 0 0 4.28-1.76l-1.42-1.42a4 4 0 0 1-5.67 0"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Open Source -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">Open Source</h1>
+                    <div class="flex items-center mt-2">
+                      <svg class="icon w-4 h-4 mr-1" viewBox="0 0 32 32"><path fill="currentColor" d="M16 18a5 5 0 1 1 5-5a5.006 5.006 0 0 1-5 5m0-8a3 3 0 1 0 3 3a3.003 3.003 0 0 0-3-3"/><path fill="currentColor" d="m16 30l-8.436-9.949a35 35 0 0 1-.348-.451A10.9 10.9 0 0 1 5 13a11 11 0 0 1 22 0a10.9 10.9 0 0 1-2.215 6.597l-.001.003s-.3.394-.345.447ZM8.813 18.395s.233.308.286.374L16 26.908l6.91-8.15c.044-.055.278-.365.279-.366A8.9 8.9 0 0 0 25 13a9 9 0 1 0-18 0a8.9 8.9 0 0 0 1.813 5.395"/></svg>
+                      <p class="text-sm font-light text-secondary">cyberspace</p>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">contributor</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>Among others:</p>
+                      <ul>
+                        <li>Open Street Map</li>
+                        <li>GrapheneOS</li>
+                        <li>BOINC</li>
+                        <li>Firefox</li>
+                        <li>FDroid</li>
+                        <li>QubesOS</li>
+                        <li>RocketPool</li>
+                        <li>Grin (MimbleWimble)</li>
+                        <li>Mitra</li>
+                      </ul>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">free as a beer</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <span class="text-sm text-right">2010 - Present</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- orgs -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">orgs</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">member</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <ul>
+                        <li>Pattern Language</li>
+                        <li>The WELL</li>
+                        <li>The Church of the Swimming Elephant</li>
+                        <li>The DAOs that can be named are not the true DAOs...</li>
+                      </ul>
+                    </article>
+                  </div>
+                  <div class="self-center justify-self-end"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- learning -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">learning</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">always</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>Ba: Cognitive Science</p>
+                      <p>Ma: Education</p>
+                      <ul>
+                        <li>Stanford University: Social and Economic Networks: Models and Analysis</li>
+                        <li>Stanford University: Machine Learning Specialization</li>
+                        <li>University of Toronto: Behavioral Economics in Action</li>
+                      </ul>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">education</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">AI</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">ML</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <a href="https://library.kiwix.org/#lang=eng&q=&category=wikipedia" target="_blank" class="link link-hover text-sm text-right flex justify-center items-center">
+                      universe
+                      <svg class="icon w-4 h-4 ml-2" viewBox="0 0 32 32"><path fill="currentColor" d="M29.25 6.76a6 6 0 0 0-8.5 0l1.42 1.42a4 4 0 1 1 5.67 5.67l-8 8a4 4 0 1 1-5.67-5.66l1.41-1.42l-1.41-1.42l-1.42 1.42a6 6 0 0 0 0 8.5A6 6 0 0 0 17 25a6 6 0 0 0 4.27-1.76l8-8a6 6 0 0 0-.02-8.48"/><path fill="currentColor" d="M4.19 24.82a4 4 0 0 1 0-5.67l8-8a4 4 0 0 1 5.67 0A3.94 3.94 0 0 1 19 14a4 4 0 0 1-1.17 2.85L15.71 19l1.42 1.42l2.12-2.12a6 6 0 0 0-8.51-8.51l-8 8a6 6 0 0 0 0 8.51A6 6 0 0 0 7 28a6.07 6.07 0 0 0 4.28-1.76l-1.42-1.42a4 4 0 0 1-5.67 0"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- affected altruism -->
+            <div class="card card-compact card-bordered border border-[oklch(var(--s))] w-full hover:shadow-lg transition-all my-4">
+              <div class="card-body">
+                <div class="grid grid-cols-3 gap-4 mb-2">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <h1 class="uppercase card-title font-extrabold tracking-tighter md:text-2xl">affected altruism</h1>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <div class="badge w-max h-max text-center badge-outline inline-block align-middle shadow-md font-mono">philanthrope</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 place-items-center">
+                  <div class="self-start col-span-2 justify-self-start text-left">
+                    <article class="prose text-secondary">
+                      <p>Automated recurring:</p>
+                      <ul>
+                        <li>Electronic Frontier Foundation</li>
+                        <li>Effective Ventures Foundation</li>
+                        <li>Free Software Foundation</li>
+                        <li>Givedirectly</li>
+                        <li>Givewell</li>
+                        <li>Vipassana Community Foundation</li>
+                        <li>Wikimedia Foundation</li>
+                        <li>SENS Foundation</li>
+                        <li>The Center for Election Science</li>
+                        <li>Software Freedom Conservancy</li>
+                        <li>Signal Technology Foundation</li>
+                        <li>PSFC</li>
+                        <li>Internet Archive</li>
+                        <li>Globalgiving</li>
+                        <li>Machine Intelligence Research Institute</li>
+                        <li>Multidisciplinary Association for Psychedelic Studies</li>
+                        <li>Center for Innovative Governance Research</li>
+                        <li>Radicalxchange Foundation</li>
+                        <li>Open Technology Fund</li>
+                      </ul>
+                    </article>
+                    <div class="flex flex-wrap content-around gap-2 my-4">
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">OSS</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">dignity</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">meditation</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">governance</span>
+                      <span class="badge text-center inline-block align-middle w-max h-max text-sm badge-outline shadow-md mb-1">longevity</span>
+                    </div>
+                  </div>
+                  <div class="self-center justify-self-end">
+                    <span class="text-sm text-right">2020 - Present</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ===== WHEN ===== -->
+        <div class="collapse collapse-arrow ease-in-out duration-700">
+          <input type="checkbox" aria-label="when" />
+          <div class="collapse-title font-extrabold tracking-tight md:text-2xl">
+            <div class="flex items-center">
+              <svg class="icon w-8 h-8 mr-4" viewBox="0 0 32 32"><path fill="currentColor" d="M15 19h2v2h-2zm0 4h2v2h-2z"/><path fill="currentColor" d="M23 11.67V4h3V2H6v2h3v7.67a2 2 0 0 0 .4 1.2L11.75 16L9.4 19.13a2 2 0 0 0-.4 1.2V28H6v2h20v-2h-3v-7.67a2 2 0 0 0-.4-1.2L20.25 16l2.35-3.13a2 2 0 0 0 .4-1.2M21 4v7H11V4Zm0 16.33V28H11v-7.67L14.25 16L12 13h8l-2.25 3Z"/></svg>
+              when
+            </div>
+          </div>
+          <div class="collapse-content">
+            <div class="flex justify-center w-full">
+              <div class="card card-compact card-bordered border-[oklch(var(--s))] w-full md:w-[30rem] lg:w-[34rem] hover:shadow-lg transition-all">
+                <div class="card-body">
+                  <h2 class="card-title">the future is not evenly distributed</h2>
+                  <p></p>
+                  <div class="card-actions justify-end">
+                    <a target="_blank" href="/Zen__the_Art_of_Macintosh1986.pdf">
+                      <button class="btn btn-outline">
+                        <p>mind bicycle</p>
+                        <svg class="icon w-6 h-6 ml-1" viewBox="0 0 32 32"><path fill="currentColor" d="M30 18v-2h-6v10h2v-4h3v-2h-3v-2zm-11 8h-4V16h4a3.003 3.003 0 0 1 3 3v4a3.003 3.003 0 0 1-3 3m-2-2h2a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2Zm-6-8H6v10h2v-3h3a2.003 2.003 0 0 0 2-2v-3a2 2 0 0 0-2-2m-3 5v-3h3l.001 3Z"/><path fill="currentColor" d="M22 14v-4a.91.91 0 0 0-.3-.7l-7-7A.9.9 0 0 0 14 2H4a2.006 2.006 0 0 0-2 2v24a2 2 0 0 0 2 2h16v-2H4V4h8v6a2.006 2.006 0 0 0 2 2h6v2Zm-8-4V4.4l5.6 5.6Z"/></svg>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+                <figure>
+                  <a target="_blank" href="/Zen__the_Art_of_Macintosh1986.pdf" class="w-full">
+                    <img src="/cover.webp" alt="Zen and the Art of the Macintosh, 1986" class="w-full" loading="lazy" />
+                  </a>
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== WHERE ===== -->
+        <div class="collapse collapse-arrow ease-in-out duration-700">
+          <input type="checkbox" aria-label="where" />
+          <div class="collapse-title font-extrabold tracking-tight md:text-2xl">
+            <div class="flex items-center">
+              <svg class="icon w-8 h-8 mr-4" viewBox="0 0 32 32"><path fill="currentColor" d="M27.562 26L17.17 8.928l2.366-3.888L17.828 4L16 7.005L14.17 4l-1.708 1.04l2.367 3.888L4.438 26H2v2h28v-2ZM16 10.85L25.22 26H17v-8h-2v8H6.78Z"/></svg>
+              where
+            </div>
+          </div>
+          <div class="collapse-content">
+            <div class="flex flex-wrap content-around gap-4 justify-center">
+              <a target="_blank" href="https://github.com/ha1ix">
+                <button class="btn btn-outline btn-md mr-2">
+                  <svg class="icon w-6 h-6" viewBox="0 0 32 32"><path fill="currentColor" d="m28.568 12.893l-.037-.094l-3.539-9.235a.92.92 0 0 0-.364-.439a.95.95 0 0 0-1.083.058a.95.95 0 0 0-.314.477l-2.39 7.31h-9.675l-2.39-7.31a.93.93 0 0 0-.313-.478a.95.95 0 0 0-1.083-.058a.93.93 0 0 0-.365.438L3.47 12.794l-.035.093a6.57 6.57 0 0 0 2.18 7.595l.011.01l.033.022l5.39 4.037l2.668 2.019l1.624 1.226c.39.297.931.297 1.322 0l1.624-1.226l2.667-2.019l5.424-4.061l.013-.01a6.574 6.574 0 0 0 2.177-7.588Z"/></svg>
+                  git
+                </button>
+              </a>
+              <a target="_blank" href="https://grange.la/@b0y">
+                <button class="btn btn-outline btn-md mr-2">
+                  <svg class="icon w-6 h-6" viewBox="0 0 32 32"><path fill="currentColor" d="M11.548 25.752c9.056 0 14.01-7.503 14.01-14.01c0-.213 0-.425-.015-.636A10 10 0 0 0 28 8.556a9.8 9.8 0 0 1-2.828.776a4.94 4.94 0 0 0 2.164-2.724a9.9 9.9 0 0 1-3.126 1.195a4.929 4.929 0 0 0-8.392 4.491A13.98 13.98 0 0 1 5.67 7.15a4.93 4.93 0 0 0 1.525 6.573a4.9 4.9 0 0 1-2.235-.617v.063a4.926 4.926 0 0 0 3.95 4.827a4.9 4.9 0 0 1-2.223.084a4.93 4.93 0 0 0 4.6 3.42A9.88 9.88 0 0 1 4 23.54a13.94 13.94 0 0 0 7.547 2.209"/></svg>
+                  feed
+                </button>
+              </a>
+              <a target="_blank" href="https://app.ens.domains/b0y.eu">
+                <button class="btn btn-outline btn-md mr-2">
+                  <svg class="icon w-6 h-6" viewBox="0 0 32 32"><path fill="currentColor" d="M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2m-2 19.59l-5-5L10.59 15L14 18.41L21.41 11l1.596 1.586Z"/><path fill="none" d="m14 21.591l-5-5L10.591 15L14 18.409L21.41 11l1.595 1.585z"/></svg>
+                  verify
+                </button>
+              </a>
+              <a target="_blank" href="signal:b0y.01">
+                <button class="btn btn-outline btn-md mr-2">
+                  <svg class="icon w-6 h-6" viewBox="0 0 32 32"><path fill="currentColor" d="M15 12h2v18h-2zm-3.67 6.22a7 7 0 0 1 0-10.44l1.34 1.49a5 5 0 0 0 0 7.46Zm9.34 0l-1.34-1.49a5 5 0 0 0 0-7.46l1.34-1.49a7 7 0 0 1 0 10.44"/><path fill="currentColor" d="M8.4 21.8a11 11 0 0 1 0-17.6l1.2 1.6a9 9 0 0 0 0 14.4Zm15.2 0l-1.2-1.6a9 9 0 0 0 0-14.4l1.2-1.6a11 11 0 0 1 0 17.6"/></svg>
+                  signal
+                </button>
+              </a>
+              <a target="_blank" href="https://t.me/b0yeu">
+                <button class="btn btn-outline btn-md mr-2">
+                  <svg class="icon w-6 h-6" viewBox="0 0 32 32"><path fill="currentColor" d="M18.303 10a2.66 2.66 0 0 0-1.908.806l-.393.405l-.397-.405a2.66 2.66 0 0 0-3.816 0a2.8 2.8 0 0 0 0 3.896L16.002 19l4.209-4.298a2.8 2.8 0 0 0 0-3.896A2.66 2.66 0 0 0 18.303 10"/><path fill="currentColor" d="M17.736 30L16 29l4-7h6a1.997 1.997 0 0 0 2-2V8a1.997 1.997 0 0 0-2-2H6a1.997 1.997 0 0 0-2 2v12a1.997 1.997 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.835Z"/></svg>
+                  telegram
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="flex justify-center items-center bg-transparent py-4">
+    <p class="flex items-center text-center font-light text-sm text-secondary">&infin; stored on the Interplanetary Filesystem  &infin;</p>
+  </footer>
+
+</body>
+</html>
